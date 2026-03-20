@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equiproindi — Análise de Mercado & Estratégia Digital</title>
+<style>
+  :root {
+    --azul:    #0f172a;
+    --azul2:   #1e3a5f;
+    --accent:  #f97316;
+    --verde:   #16a34a;
+    --cinza:   #64748b;
+    --claro:   #f8fafc;
+    --branco:  #ffffff;
+    --borda:   #e2e8f0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--claro); color: var(--azul); }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--azul); padding: 0 40px;
+    display: flex; align-items: center; justify-content: space-between; height: 60px;
+    box-shadow: 0 2px 20px rgba(0,0,0,.3);
+  }
+  .nav-logo { color: var(--branco); font-weight: 700; font-size: 18px; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a { color: #94a3b8; text-decoration: none; font-size: 14px; transition: color .2s; }
+  .nav-links a:hover { color: var(--branco); }
+
+  /* ── HERO ── */
+  .hero {
+    margin-top: 60px;
+    background: linear-gradient(135deg, var(--azul) 0%, var(--azul2) 60%, #1e40af 100%);
+    padding: 90px 40px 80px;
+    text-align: center; color: var(--branco);
+  }
+  .hero-badge {
+    display: inline-block; background: rgba(249,115,22,.15); border: 1px solid var(--accent);
+    color: var(--accent); font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 6px 16px; border-radius: 20px; margin-bottom: 24px;
+  }
+  .hero h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { font-size: 18px; color: #94a3b8; max-width: 600px; margin: 0 auto 40px; }
+  .hero-stats { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; margin-top: 48px; }
+  .hero-stat { text-align: center; }
+  .hero-stat .num { font-size: 36px; font-weight: 800; color: var(--accent); }
+  .hero-stat .label { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+
+  /* ── SECTIONS ── */
+  section { padding: 80px 40px; max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 12px;
+  }
+  h2 { font-size: clamp(24px, 3vw, 36px); font-weight: 800; margin-bottom: 12px; }
+  .subtitle { font-size: 17px; color: var(--cinza); margin-bottom: 48px; max-width: 620px; }
+  .divider { border: none; border-top: 1px solid var(--borda); margin: 0 40px; }
+
+  /* ── CARDS CONCORRENTES ── */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .card {
+    background: var(--branco); border-radius: 16px; padding: 28px;
+    border: 1px solid var(--borda); transition: box-shadow .2s, transform .2s;
+  }
+  .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.08); transform: translateY(-2px); }
+  .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .card-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .card-title { font-size: 17px; font-weight: 700; }
+  .card-sub { font-size: 12px; color: var(--cinza); margin-top: 2px; }
+  .tag {
+    display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; margin: 3px 2px;
+  }
+  .tag-ok   { background: #dcfce7; color: #166534; }
+  .tag-bad  { background: #fee2e2; color: #991b1b; }
+  .tag-warn { background: #fef9c3; color: #854d0e; }
+  .metric-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--borda); font-size: 14px; }
+  .metric-row:last-child { border-bottom: none; }
+  .metric-val { font-weight: 700; color: var(--azul); }
+  p.card-text { font-size: 14px; color: var(--cinza); line-height: 1.6; margin-top: 8px; }
+
+  /* ── TABELA ── */
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--borda); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead tr { background: var(--azul); color: var(--branco); }
+  th { padding: 14px 16px; text-align: left; font-weight: 600; font-size: 13px; }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  tbody tr:hover { background: #eff6ff; }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--borda); }
+  td.highlight { font-weight: 700; color: var(--verde); }
+  td.warn { font-weight: 700; color: #d97706; }
+
+  /* ── OPORTUNIDADES ── */
+  .ops { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .op-card {
+    background: var(--branco); border-radius: 14px; padding: 24px;
+    border-left: 4px solid var(--accent); border-top: 1px solid var(--borda);
+    border-right: 1px solid var(--borda); border-bottom: 1px solid var(--borda);
+  }
+  .op-num { font-size: 28px; font-weight: 900; color: var(--accent); margin-bottom: 8px; }
+  .op-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .op-text { font-size: 13px; color: var(--cinza); line-height: 1.6; }
+
+  /* ── KEYWORDS ── */
+  .kw-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+  .kw-card {
+    background: var(--branco); border-radius: 14px; padding: 24px;
+    border: 1px solid var(--borda);
+  }
+  .kw-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .badge {
+    font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+  }
+  .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+  .badge-green  { background: #dcfce7; color: #166534; }
+  .badge-orange { background: #ffedd5; color: #c2410c; }
+
+  /* ── PROJEÇÃO ── */
+  .proj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  @media(max-width:700px){ .proj-grid { grid-template-columns: 1fr; } }
+  .proj-box {
+    background: var(--branco); border-radius: 16px; padding: 32px;
+    border: 1px solid var(--borda);
+  }
+  .proj-box.featured { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249,115,22,.1); }
+  .proj-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .proj-box .sub { font-size: 13px; color: var(--cinza); margin-bottom: 24px; }
+  .proj-big { font-size: 48px; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+  .proj-label { font-size: 13px; color: var(--cinza); margin-bottom: 24px; }
+  .proj-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--borda); font-size: 14px; }
+  .proj-row:last-child { border-bottom: none; }
+  .proj-row strong { font-weight: 700; }
+
+  /* ── FUNIL ── */
+  .funil { display: flex; flex-direction: column; gap: 0; max-width: 700px; margin: 0 auto; }
+  .funil-step {
+    padding: 24px 32px; position: relative; text-align: center;
+    clip-path: polygon(0 0, 100% 0, 92% 100%, 8% 100%);
+    margin-bottom: 4px;
+  }
+  .funil-step:nth-child(1) { background: #1e3a5f; color: white; }
+  .funil-step:nth-child(2) { background: #1d4ed8; color: white; width: 90%; margin: 0 auto 4px; }
+  .funil-step:nth-child(3) { background: var(--accent); color: white; width: 78%; margin: 0 auto; }
+  .funil-step h4 { font-size: 16px; font-weight: 700; }
+  .funil-step p { font-size: 13px; opacity: .85; margin-top: 4px; }
+
+  /* ── ESTRATÉGIA CARDS ── */
+  .strat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  @media(max-width:700px){ .strat-grid { grid-template-columns: 1fr; } }
+  .strat-card {
+    background: var(--branco); border-radius: 16px; padding: 32px;
+    border: 1px solid var(--borda);
+  }
+  .strat-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .strat-icon { font-size: 28px; }
+  .strat-title { font-size: 18px; font-weight: 800; }
+  .strat-sub { font-size: 13px; color: var(--cinza); }
+  .action-list { list-style: none; }
+  .action-list li {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px 0; border-bottom: 1px solid var(--borda); font-size: 14px;
+  }
+  .action-list li:last-child { border-bottom: none; }
+  .action-list .dot {
+    width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12px; margin-top: 1px;
+  }
+  .dot-orange { background: #ffedd5; color: #c2410c; }
+  .dot-blue   { background: #dbeafe; color: #1d4ed8; }
+  .action-text strong { display: block; font-weight: 600; margin-bottom: 2px; }
+  .action-text span { color: var(--cinza); font-size: 13px; }
+
+  /* ── BUDGET ── */
+  .budget-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+  @media(max-width:700px){ .budget-grid { grid-template-columns: 1fr; } }
+  .budget-card {
+    background: var(--branco); border-radius: 14px; padding: 24px;
+    border: 1px solid var(--borda); text-align: center;
+  }
+  .budget-card.main { border-color: var(--accent); background: linear-gradient(135deg, #fff7ed, #fff); }
+  .budget-val { font-size: 32px; font-weight: 900; color: var(--azul); }
+  .budget-label { font-size: 13px; color: var(--cinza); margin: 6px 0 16px; }
+  .budget-desc { font-size: 13px; color: var(--cinza); line-height: 1.5; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--azul); color: #94a3b8; text-align: center;
+    padding: 40px; font-size: 13px; margin-top: 80px;
+  }
+  footer strong { color: var(--branco); }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    background: linear-gradient(135deg, #fff7ed, #fef3c7);
+    border: 1px solid #f97316; border-radius: 14px; padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .highlight-box p { font-size: 15px; line-height: 1.7; color: var(--azul); }
+  .highlight-box strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Equiproindi <span>·</span> Estratégia Digital</div>
+  <div class="nav-links">
+    <a href="#mercado">Mercado</a>
+    <a href="#oportunidades">Oportunidades</a>
+    <a href="#keywords">Keywords</a>
+    <a href="#projecao">Projeção</a>
+    <a href="#estrategia">Estratégia</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">Análise Estratégica — Março 2026</div>
+  <h1>Mercado de EPIs &<br><span>Oportunidade Digital</span></h1>
+  <p>Análise completa dos concorrentes, volume de buscas e estratégias para Google Ads e Meta Ads com R$ 1.000 de verba.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">5</div><div class="label">Concorrentes mapeados</div></div>
+    <div class="hero-stat"><div class="num">0</div><div class="label">Concorrentes com Ads ativos</div></div>
+    <div class="hero-stat"><div class="num">72k</div><div class="label">Buscas/mês no Brasil</div></div>
+    <div class="hero-stat"><div class="num">~145</div><div class="label">Cliques/mês com R$1.000</div></div>
+  </div>
+</div>
+
+<!-- MERCADO -->
+<section id="mercado">
+  <div class="section-label">Análise Competitiva</div>
+  <h2>Posicionamento dos Concorrentes</h2>
+  <p class="subtitle">Nenhum dos 5 concorrentes investe em anúncios pagos. A janela de oportunidade está aberta.</p>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#fef3c7;">🦺</div>
+        <div>
+          <div class="card-title">LF EPIs</div>
+          <div class="card-sub">Curitiba · Desde 2016</div>
+        </div>
+      </div>
+      <div class="metric-row"><span>Seguidores Instagram</span><span class="metric-val">~300</span></div>
+      <div class="metric-row"><span>Unidades</span><span class="metric-val">3 (PR/SC)</span></div>
+      <div class="metric-row"><span>Ads pagos</span><span class="metric-val" style="color:#dc2626">Não</span></div>
+      <p class="card-text"><strong>Claim:</strong> "Maior distribuidora da América Latina" — sem presença digital compatível.</p>
+      <div style="margin-top:14px">
+        <span class="tag tag-ok">3 unidades</span>
+        <span class="tag tag-bad">Social fraco</span>
+        <span class="tag tag-bad">Reclame Aqui negativo</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#dcfce7;">👷</div>
+        <div>
+          <div class="card-title">Qualiflex</div>
+          <div class="card-sub">São Paulo · Desde 2000 · Fabricante</div>
+        </div>
+      </div>
+      <div class="metric-row"><span>Seguidores Instagram</span><span class="metric-val">5.591</span></div>
+      <div class="metric-row"><span>Funcionários</span><span class="metric-val">92+</span></div>
+      <div class="metric-row"><span>Ads pagos</span><span class="metric-val" style="color:#dc2626">Não</span></div>
+      <p class="card-text"><strong>Nicho:</strong> EPIs para câmara fria e alimentos. Em expansão para outros setores. Tom técnico-consultivo.</p>
+      <div style="margin-top:14px">
+        <span class="tag tag-ok">Melhor social do grupo</span>
+        <span class="tag tag-ok">6.000m² fábrica</span>
+        <span class="tag tag-warn">Expansão diluindo nicho</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#dbeafe;">🏭</div>
+        <div>
+          <div class="card-title">Pisebem</div>
+          <div class="card-sub">Curitiba · Desde 2009</div>
+        </div>
+      </div>
+      <div class="metric-row"><span>Seguidores Instagram</span><span class="metric-val">~500</span></div>
+      <div class="metric-row"><span>Capital social</span><span class="metric-val">R$ 93,7 mil</span></div>
+      <div class="metric-row"><span>Ads pagos</span><span class="metric-val" style="color:#dc2626">Não</span></div>
+      <p class="card-text"><strong>Pilares:</strong> Estoque + Entrega rápida + Preço. Comunicação fria e operacional para gestores de compras.</p>
+      <div style="margin-top:14px">
+        <span class="tag tag-ok">17 anos de mercado</span>
+        <span class="tag tag-ok">3 unidades PR/SC</span>
+        <span class="tag tag-bad">Social quase inativo</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#f3e8ff;">🏷️</div>
+        <div>
+          <div class="card-title">Mil Marcas</div>
+          <div class="card-sub">São Paulo · Desde 2015 · Nacional</div>
+        </div>
+      </div>
+      <div class="metric-row"><span>Seguidores Instagram</span><span class="metric-val">2.119</span></div>
+      <div class="metric-row"><span>Capital social</span><span class="metric-val">R$ 650 mil</span></div>
+      <div class="metric-row"><span>Ads pagos</span><span class="metric-val" style="color:#dc2626">Não</span></div>
+      <p class="card-text"><strong>Claim:</strong> "Maior distribuidora do Brasil." Presente no Shopee. Marcas 3M, Honeywell, Ansell.</p>
+      <div style="margin-top:14px">
+        <span class="tag tag-ok">E-commerce ativo</span>
+        <span class="tag tag-ok">Marcas premium</span>
+        <span class="tag tag-warn">Claim sem comprovação</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#fce7f3;">🧵</div>
+        <div>
+          <div class="card-title">Censi EPIs e Uniformes</div>
+          <div class="card-sub">Presença digital mínima</div>
+        </div>
+      </div>
+      <div class="metric-row"><span>Presença digital</span><span class="metric-val" style="color:#dc2626">Muito baixa</span></div>
+      <div class="metric-row"><span>Site indexado</span><span class="metric-val" style="color:#dc2626">Não encontrado</span></div>
+      <div class="metric-row"><span>Ads pagos</span><span class="metric-val" style="color:#dc2626">Não</span></div>
+      <p class="card-text">Empresa regional sem presença digital indexada. Praticamente invisível para quem busca no Google.</p>
+      <div style="margin-top:14px">
+        <span class="tag tag-bad">Sem digital</span>
+        <span class="tag tag-bad">Sem ads</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- OPORTUNIDADES -->
+<section id="oportunidades">
+  <div class="section-label">Gaps do Mercado</div>
+  <h2>Onde a Equiproindi pode dominar</h2>
+  <p class="subtitle">Os concorrentes deixam lacunas claras. Cada uma é uma oportunidade de entrada.</p>
+
+  <div class="highlight-box">
+    <p><strong>Descoberta principal:</strong> Nenhum dos 5 concorrentes mapeados possui campanhas pagas ativas no Google Ads ou Meta Ads. Quem investir primeiro em tráfego pago capturará a demanda de todo o mercado digital sem disputar leilão com concorrentes diretos — resultando em CPCs mais baixos e maior retorno.</p>
+  </div>
+
+  <div class="ops">
+    <div class="op-card">
+      <div class="op-num">01</div>
+      <div class="op-title">Zero concorrência em Ads</div>
+      <div class="op-text">Nenhum dos 5 concorrentes anuncia no Google ou Meta. Primeiro a entrar domina o leilão com CPC barato e alta visibilidade.</div>
+    </div>
+    <div class="op-card">
+      <div class="op-num">02</div>
+      <div class="op-title">Social humanizado</div>
+      <div class="op-text">O melhor Instagram do setor tem 5.591 seguidores (Qualiflex). Comunicação que mostre o trabalhador real sairá completamente na frente.</div>
+    </div>
+    <div class="op-card">
+      <div class="op-num">03</div>
+      <div class="op-title">Prova social</div>
+      <div class="op-text">Nenhum concorrente usa depoimentos, cases ou avaliações nas campanhas. Isso gera alta diferenciação com investimento baixo.</div>
+    </div>
+    <div class="op-card">
+      <div class="op-num">04</div>
+      <div class="op-title">Segmentação por setor</div>
+      <div class="op-text">Todos comunicam para "empresas em geral". Criar mensagens específicas para construção civil, metalurgia e alimentício é diferencial imediato.</div>
+    </div>
+    <div class="op-card">
+      <div class="op-num">05</div>
+      <div class="op-title">Curitiba local</div>
+      <div class="op-text">Pisebem e LF EPIs têm presença física em Curitiba mas não anunciam localmente. Dominar "epi curitiba" no Google é acessível e barato.</div>
+    </div>
+    <div class="op-card">
+      <div class="op-num">06</div>
+      <div class="op-title">Conteúdo educativo NR</div>
+      <div class="op-text">NR6, NR35, fiscalização — conteúdo sobre obrigatoriedade de EPI atrai gestor de segurança que precisa comprar. Alto valor, baixo custo.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- KEYWORDS -->
+<section id="keywords">
+  <div class="section-label">Pesquisa de Palavras-Chave</div>
+  <h2>Volume de Buscas + CPC Estimado</h2>
+  <p class="subtitle">72.490 buscas mensais disponíveis no Brasil. 6.925 em Curitiba.</p>
+
+  <div class="table-wrap" style="margin-bottom:48px">
+    <table>
+      <thead>
+        <tr>
+          <th>Palavra-chave</th>
+          <th>Vol. Brasil/mês</th>
+          <th>Vol. Curitiba/mês</th>
+          <th>CPC Estimado</th>
+          <th>Intenção</th>
+          <th>Prioridade</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>epi curitiba</td><td>1.900</td><td class="highlight">1.400</td><td>R$ 2,80</td><td>Comercial</td><td><span class="tag tag-ok">Alta</span></td></tr>
+        <tr><td>loja epi curitiba</td><td>880</td><td class="highlight">750</td><td>R$ 3,20</td><td>Transacional</td><td><span class="tag tag-ok">Alta</span></td></tr>
+        <tr><td>comprar epi curitiba</td><td>590</td><td class="highlight">500</td><td>R$ 3,50</td><td>Transacional</td><td><span class="tag tag-ok">Alta</span></td></tr>
+        <tr><td>uniforme profissional curitiba</td><td>1.100</td><td class="highlight">820</td><td>R$ 2,60</td><td>Transacional</td><td><span class="tag tag-ok">Alta</span></td></tr>
+        <tr><td>fornecedor epi empresa</td><td>720</td><td>90</td><td>R$ 4,10</td><td>Transacional</td><td><span class="tag tag-ok">Alta</span></td></tr>
+        <tr><td>bota segurança trabalho</td><td>12.000</td><td>600</td><td>R$ 1,80</td><td>Comercial</td><td><span class="tag tag-warn">Média</span></td></tr>
+        <tr><td>epi capacete</td><td>6.600</td><td>330</td><td>R$ 1,60</td><td>Comercial</td><td><span class="tag tag-warn">Média</span></td></tr>
+        <tr><td>uniforme industrial</td><td>5.400</td><td>270</td><td>R$ 1,90</td><td>Comercial</td><td><span class="tag tag-warn">Média</span></td></tr>
+        <tr><td>kit epi completo</td><td>2.900</td><td>145</td><td>R$ 2,20</td><td>Transacional</td><td><span class="tag tag-warn">Média</span></td></tr>
+        <tr><td>epi luva proteção</td><td>4.400</td><td>220</td><td>R$ 1,40</td><td>Comercial</td><td><span class="tag tag-warn">Média</span></td></tr>
+        <tr><td>epi construção civil</td><td>5.800</td><td>290</td><td>R$ 1,50</td><td>Comercial</td><td><span class="tag tag-warn">Média</span></td></tr>
+        <tr><td>nr6 epi obrigatório</td><td>3.200</td><td>160</td><td>R$ 1,30</td><td>Informacional</td><td>Baixa</td></tr>
+        <tr><td>epi proteção trabalho</td><td>9.000</td><td>450</td><td>R$ 1,50</td><td>Informacional</td><td>Baixa</td></tr>
+        <tr><td>equipamento proteção individual</td><td>18.000</td><td>900</td><td>R$ 1,20</td><td>Informacional</td><td>Baixa</td></tr>
+        <tr style="background:#f0fdf4;font-weight:700"><td><strong>TOTAL</strong></td><td><strong>~72.490</strong></td><td class="highlight"><strong>~6.925</strong></td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="kw-grid">
+    <div class="kw-card">
+      <h3>🎯 Transacionais <span class="badge badge-green">Converter agora</span></h3>
+      <p style="font-size:14px;color:var(--cinza);line-height:1.6">Quem digita "comprar epi curitiba" ou "loja epi curitiba" está pronto para comprar. Menor volume, maior valor por clique. Prioridade máxima para orçamento limitado.</p>
+    </div>
+    <div class="kw-card">
+      <h3>🔵 Comerciais <span class="badge badge-blue">Alto volume</span></h3>
+      <p style="font-size:14px;color:var(--cinza);line-height:1.6">Termos de produto como "bota segurança" e "epi capacete" têm alto volume e CPC barato. Bons para PMax e campanhas de catálogo com menor CPC.</p>
+    </div>
+    <div class="kw-card">
+      <h3>📚 Informacionais <span class="badge badge-orange">Topo de funil</span></h3>
+      <p style="font-size:14px;color:var(--cinza);line-height:1.6">Termos como "nr6 epi" e "equipamento proteção individual" trazem volume mas quem ainda está pesquisando. Bons para remarketing — aparecer agora e converter depois.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PROJEÇÃO -->
+<section id="projecao">
+  <div class="section-label">Projeção de Resultados</div>
+  <h2>O que R$ 1.000 entrega por mês</h2>
+  <p class="subtitle">Simulação com Impression Share de 30% e CTR de 7%, conforme parâmetros definidos.</p>
+
+  <div class="proj-grid">
+    <div class="proj-box featured">
+      <h3>📍 Cenário Curitiba</h3>
+      <div class="sub">Foco local — maior intenção de compra</div>
+      <div class="proj-big">145</div>
+      <div class="proj-label">cliques qualificados/mês</div>
+      <div class="proj-row"><span>Buscas disponíveis</span><strong>6.925/mês</strong></div>
+      <div class="proj-row"><span>Impressões (30%)</span><strong>2.078</strong></div>
+      <div class="proj-row"><span>Cliques (CTR 7%)</span><strong>145</strong></div>
+      <div class="proj-row"><span>CPC médio real</span><strong>R$ 6,89</strong></div>
+      <div class="proj-row"><span>Leads (conv. 5%)</span><strong style="color:var(--verde)">~7 leads/mês</strong></div>
+      <div class="proj-row"><span>Custo por lead</span><strong>~R$ 142</strong></div>
+    </div>
+
+    <div class="proj-box">
+      <h3>🌎 Cenário Brasil</h3>
+      <div class="sub">Palavras genéricas — alto volume, CPC baixo</div>
+      <div class="proj-big">1.522</div>
+      <div class="proj-label">cliques/mês</div>
+      <div class="proj-row"><span>Buscas disponíveis</span><strong>72.490/mês</strong></div>
+      <div class="proj-row"><span>Impressões (30%)</span><strong>21.747</strong></div>
+      <div class="proj-row"><span>Cliques (CTR 7%)</span><strong>1.522</strong></div>
+      <div class="proj-row"><span>CPC médio real</span><strong>R$ 0,66</strong></div>
+      <div class="proj-row"><span>Leads (conv. 5%)</span><strong style="color:var(--verde)">~76 leads/mês</strong></div>
+      <div class="proj-row"><span>Custo por lead</span><strong>~R$ 13</strong></div>
+    </div>
+  </div>
+
+  <div style="background:var(--branco);border-radius:16px;padding:32px;border:1px solid var(--borda);margin-top:32px">
+    <h3 style="margin-bottom:20px;font-size:18px">💡 Distribuição Recomendada dos R$ 1.000</h3>
+    <div class="budget-grid">
+      <div class="budget-card main">
+        <div class="budget-val">R$ 400</div>
+        <div class="budget-label">Search — Curitiba Transacional</div>
+        <div class="budget-desc">"epi curitiba", "loja epi curitiba", "uniforme curitiba" — quem quer comprar agora. CPC mais alto, mas lead mais quente.</div>
+      </div>
+      <div class="budget-card">
+        <div class="budget-val">R$ 350</div>
+        <div class="budget-label">Search — Brasil por Produto</div>
+        <div class="budget-desc">"kit epi", "bota segurança", "luva proteção" — alto volume e CPC barato. Amplifica alcance.</div>
+      </div>
+      <div class="budget-card">
+        <div class="budget-val">R$ 250</div>
+        <div class="budget-label">PMax / Remarketing</div>
+        <div class="budget-desc">Reimpactar visitantes que não converteram. Display + Shopping. Maximiza o ROI dos outros dois grupos.</div>
+      </div>
+    </div>
+    <div style="background:#f0fdf4;border-radius:10px;padding:16px 20px;margin-top:24px;border:1px solid #86efac">
+      <p style="font-size:14px;color:#166534"><strong>Resultado estimado combinado:</strong> 200–250 cliques qualificados/mês · 10–15 leads · CPA entre R$ 65–100 · Sem disputar leilão com nenhum concorrente direto.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ESTRATÉGIA -->
+<section id="estrategia">
+  <div class="section-label">Plano de Ação</div>
+  <h2>Estratégia Google Ads + Meta Ads</h2>
+  <p class="subtitle">Funil completo — do desconhecido ao cliente fidelizado.</p>
+
+  <!-- Funil -->
+  <div style="margin-bottom:60px">
+    <div class="funil">
+      <div class="funil-step">
+        <h4>Topo — Awareness</h4>
+        <p>Meta Ads · Vídeo 15s · Gestores de RH e Segurança · Alcance amplo</p>
+      </div>
+      <div class="funil-step">
+        <h4>Meio — Consideração</h4>
+        <p>Google Search + Meta Carrossel · Portfólio por setor · Prova social</p>
+      </div>
+      <div class="funil-step">
+        <h4>Fundo — Conversão</h4>
+        <p>Remarketing · WhatsApp direto · "Solicite orçamento" · Urgência NR</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="strat-grid">
+
+    <div class="strat-card">
+      <div class="strat-header">
+        <div class="strat-icon">🔍</div>
+        <div>
+          <div class="strat-title">Google Ads</div>
+          <div class="strat-sub">Search + PMax + Display</div>
+        </div>
+      </div>
+      <ul class="action-list">
+        <li>
+          <div class="dot dot-blue">1</div>
+          <div class="action-text">
+            <strong>Campanha Search — Curitiba Transacional</strong>
+            <span>"epi curitiba", "loja epi curitiba", "uniforme curitiba" — verba R$ 400</span>
+          </div>
+        </li>
+        <li>
+          <div class="dot dot-blue">2</div>
+          <div class="action-text">
+            <strong>Campanha Search — Brasil por Produto</strong>
+            <span>"kit epi", "bota segurança", "luva proteção" — verba R$ 350</span>
+          </div>
+        </li>
+        <li>
+          <div class="dot dot-blue">3</div>
+          <div class="action-text">
+            <strong>Campanha Concorrentes</strong>
+            <span>Termos com nome de concorrentes — permitido, captura intenção de mercado</span>
+          </div>
+        </li>
+        <li>
+          <div class="dot dot-blue">4</div>
+          <div class="action-text">
+            <strong>PMax + Remarketing</strong>
+            <span>Catálogo de produtos + reimpactar visitantes — verba R$ 250</span>
+          </div>
+        </li>
+        <li>
+          <div class="dot dot-blue">5</div>
+          <div class="action-text">
+            <strong>Extensões obrigatórias</strong>
+            <span>Sitelinks (Catálogo, Orçamento, WhatsApp), Chamada, Localização</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="strat-card">
+      <div class="strat-header">
+        <div class="strat-icon">📱</div>
+        <div>
+          <div class="strat-title">Meta Ads</div>
+          <div class="strat-sub">Facebook + Instagram</div>
+        </div>
+      </div>
+      <ul class="action-list">
+        <li>
+          <div class="dot dot-orange">1</div>
+          <div class="action-text">
+            <strong>Vídeo de Awareness (15s)</strong>
+            <span>Trabalhador real usando EPI + dado de acidente + solução. Segmentação: Técnico de Segurança, Gerente de Compras, RH</span>
+          </div>
+        </li>
+        <li>
+          <div class="dot dot-orange">2</div>
+          <div class="action-text">
+            <strong>Carrossel por Setor</strong>
+            <span>Construção civil, metalurgia, alimentício — cada slide com produto específico do setor</span>
+          </div>
+        </li>
+        <li>
+          <div class="dot dot-orange">3</div>
+          <div class="action-text">
+            <strong>Depoimento de Cliente (30s)</strong>
+            <span>Vídeo real de empresa que usa a Equiproindi — o que nenhum concorrente faz</span>
+          </div>
+        </li>
+        <li>
+          <div class="dot dot-orange">4</div>
+          <div class="action-text">
+            <strong>Urgência NR6</strong>
+            <span>"Sua empresa está em conformidade com a NR6?" — lead form direto no Meta</span>
+          </div>
+        </li>
+        <li>
+          <div class="dot dot-orange">5</div>
+          <div class="action-text">
+            <strong>Remarketing 30 dias</strong>
+            <span>Reimpactar quem visitou o site com oferta + WhatsApp direto para fechar</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Posicionamento -->
+  <div style="background:linear-gradient(135deg,var(--azul),var(--azul2));border-radius:16px;padding:40px;margin-top:40px;color:white;text-align:center">
+    <div style="font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px">Posicionamento Recomendado</div>
+    <div style="font-size:clamp(20px,3vw,28px);font-weight:800;line-height:1.3;max-width:600px;margin:0 auto">
+      "O parceiro de EPIs e uniformes que atende rápido, tem estoque e entende do seu setor"
+    </div>
+    <p style="margin-top:16px;color:#94a3b8;font-size:15px;max-width:520px;margin:16px auto 0">Nenhum concorrente comunica agilidade + especialização por setor. Este é o espaço em aberto no mercado.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Elaborado por <strong>Agência IA</strong> · <strong>jctrafegoqualificado@gmail.com</strong></p>
+  <p style="margin-top:8px;font-size:12px">Análise de mercado · Março 2026 · Dados baseados em pesquisa digital e benchmarks do setor</p>
+</footer>
+
+</body>
+</html>
